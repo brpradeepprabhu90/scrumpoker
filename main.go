@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 	"log"
+	"os"
 	"sync"
 )
 
@@ -110,10 +111,23 @@ func runHub() {
 		}
 	}
 }
+func getPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":3000"
+	} else {
+		port = ":" + port
+	}
+
+	return port
+}
 func main() {
 	app := fiber.New()
 	app.Static("/", "./dist")
 	app.Use(cors.New())
+	app.Get("/*", func(ctx *fiber.Ctx) error {
+		return ctx.SendFile("dist/index.html")
+	})
 	app.Get("api/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
@@ -197,8 +211,7 @@ func main() {
 	})
 
 	app.Get("/ws/:roomName", websocket.New(func(c *websocket.Conn) {
-		fmt.Println("connected") // "Localhost:3000"
-		//userName := c.Params("userName")
+		fmt.Println("connected")
 		defer func() {
 			unregister <- c
 			c.Close()
@@ -225,5 +238,5 @@ func main() {
 		}
 	}))
 
-	log.Fatal(app.Listen(":3000"))
+	app.Listen(getPort())
 }
