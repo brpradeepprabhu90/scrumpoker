@@ -112,11 +112,12 @@ func runHub() {
 }
 func main() {
 	app := fiber.New()
+	app.Static("/", "./dist")
 	app.Use(cors.New())
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.Get("api/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-	app.Post("/createRoom", func(c *fiber.Ctx) error {
+	app.Post("api/createRoom", func(c *fiber.Ctx) error {
 		payload := struct {
 			RoomName string `json:"roomName"`
 		}{}
@@ -134,7 +135,7 @@ func main() {
 		})
 	})
 
-	app.Post("/createUser", func(c *fiber.Ctx) error {
+	app.Post("api/createUser", func(c *fiber.Ctx) error {
 		payload := struct {
 			RoomName string `json:"roomName"`
 			UserName string `json:"userName"`
@@ -158,7 +159,7 @@ func main() {
 			Message: "User " + payload.UserName + " is already present",
 		})
 	})
-	app.Get("isUserPresent/:roomName/:userName", func(c *fiber.Ctx) error {
+	app.Get("api/isUserPresent/:roomName/:userName", func(c *fiber.Ctx) error {
 		roomName := c.Params("roomName")
 		userName := c.Params("userName")
 		if !checkModel(roomName) {
@@ -175,7 +176,7 @@ func main() {
 			Message: "User " + userName + " is not present",
 		})
 	})
-	app.Get("getUsers/:roomName", func(c *fiber.Ctx) error {
+	app.Get("api/getUsers/:roomName", func(c *fiber.Ctx) error {
 		roomName := c.Params("roomName")
 		if !checkModel(roomName) {
 			return c.Status(500).JSON(models.Message{
