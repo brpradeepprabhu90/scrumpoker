@@ -35,6 +35,13 @@ export class PokerComponent implements OnInit {
     this.apiService.isUserPresent(this.roomName, this.userName).pipe(take(1)).subscribe({
       next: (data: Messages) => {
         this.getUsers();
+        this.socket$.next({
+          message: {
+            type: "userAdded",
+            roomName: this.roomName,
+            username: this.userName
+          }
+        });
       },
       error: (data: any) => {
         if (data.error?.Message) {
