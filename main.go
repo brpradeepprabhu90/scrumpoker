@@ -54,13 +54,21 @@ var register = make(chan *websocket.Conn)
 var broadcast = make(chan string)
 var unregister = make(chan *websocket.Conn)
 
-func updatePoints(message string) {
+func implementMessage(message string) {
 	s := models.Communuication{}
 	if err := json.Unmarshal([]byte(message), &s); err != nil {
 		log.Println(err)
 	}
 	d := rooms[s.Message.RoomName]
-	d.UpdatePoints(s.Message.Username, s.Message.Points)
+	switch s.Message.Type {
+	case "updateUser":
+		d.UpdatePoints(s.Message.Username, s.Message.Points)
+	case "revealCards":
+		d.UpdateIsVisible()
+	case "resetCards":
+		d.ResetPoints()
+	}
+
 }
 
 func runHub() {
@@ -80,7 +88,9 @@ func runHub() {
 					if c.isClosing {
 						return
 					}
-					updatePoints(message)
+
+					implementMessage(message)
+
 					if err := connection.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 						c.isClosing = true
 						log.Println("write error:", err)
@@ -106,19 +116,25 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-	app.Get("/:roomName", func(c *fiber.Ctx) error {
-		roomName := c.Params("roomName")
-		isRoomCreated := createModel(roomName)
+	app.Post("/createRoom", func(c *fiber.Ctx) error {
+		payload := struct {
+			RoomName string `json:"roomName"`
+		}{}
+		if err := c.BodyParser(&payload); err != nil {
+			return err
+		}
+		isRoomCreated := createModel(payload.RoomName)
 		if isRoomCreated {
 			return c.JSON(models.Message{
-				Message: "Room " + roomName + " is created",
+				Message: "Room " + payload.RoomName + " is created",
 			})
 		}
 		return c.Status(500).JSON(models.Message{
-			Message: "Room " + roomName + " is already created",
+			Message: "Room " + payload.RoomName + " is already created",
 		})
 	})
-	app.Post("createUser", func(c *fiber.Ctx) error {
+
+	app.Post("/createUser", func(c *fiber.Ctx) error {
 		payload := struct {
 			RoomName string `json:"roomName"`
 			UserName string `json:"userName"`
@@ -166,7 +182,7 @@ func main() {
 				Message: "Room " + roomName + " is not created",
 			})
 		}
-		return c.JSON(rooms[roomName].Members)
+		return c.JSON(rooms[roomName])
 
 	})
 	/*** Webs sockets ***************/
@@ -198,9 +214,7 @@ func main() {
 				log.Println(err)
 			}
 
-			if s.Message.Type == "updateUser" {
-				broadcast <- string(msg)
-			}
+			broadcast <- string(msg)
 
 			err = c.WriteMessage(mt, msg)
 			if err != nil {

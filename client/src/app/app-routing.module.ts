@@ -19,7 +19,13 @@ const routes: Routes = [
   {
     path: "room/:roomId/:userId",
     component: PokerComponent
-  }
+  },
+  {
+    path: "",
+    redirectTo: "room",
+    pathMatch: 'full'
+
+  },
 
 ];
 

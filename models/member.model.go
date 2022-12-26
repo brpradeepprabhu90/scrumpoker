@@ -1,8 +1,8 @@
 package models
 
 type Member struct {
-	Name   string
-	Points int
+	Name   string `json:"name"`
+	Points int    `json:"points"`
 }
 
 func CreateMembers(userName string) *Member {

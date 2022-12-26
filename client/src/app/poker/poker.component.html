@@ -1,0 +1,36 @@
+<p-panel header="{{roomName | titlecase }}">
+
+  <div class="grid">
+    <div *ngFor="let card of cards" class="col card" (click)="sendPoints(card)">
+      {{card}}
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-12 text-primary text-xl text-center">You have entered {{points}}</div>
+    <p-table [value]="usersList" class="col-12">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Points</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-car>
+        <tr>
+          <td>{{car.name | titlecase }}</td>
+          <td>
+          <span [ngClass]="{'blur':(!isShow)}">
+            {{car.points}}
+          </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div class="col-12">
+      <div class="aveargePoints" *ngIf="isShow">
+        Average Points = {{averagePoints}}
+      </div>
+      <button class="p-button mr-2" style="float:right" (click)="onRevealCards()">Reveal Points</button>
+      <button class="p-button  mr-2" style="float:right" (click)="onResetCards()">Reset Cards</button>
+    </div>
+  </div>
+</p-panel>

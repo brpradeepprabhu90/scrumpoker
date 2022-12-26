@@ -16,6 +16,8 @@ import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {ToastModule} from "primeng/toast";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {TableModule} from "primeng/table";
+import {PanelModule} from "primeng/panel";
 
 @NgModule({
   declarations: [
@@ -32,8 +34,9 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     HttpClientModule,
     ToastModule,
     FormsModule,
-
-    CommonModule
+    TableModule,
+    CommonModule,
+    PanelModule
   ],
   providers: [ApiService, MessageService],
   bootstrap: [AppComponent]

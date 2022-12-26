@@ -1,0 +1,12 @@
+<div class="flex  justify-content-center align-content-center align-items-center h-full">
+  <p-card header="Room Details">
+    <div class="p-float-label">
+      <input id="float-input" type="text" [(ngModel)]="roomName" pInputText>
+      <label for="float-input">Room Name</label>
+
+    </div>
+    <div class="py-3" >
+      <button class="p-button" style="float:right" (click)="onSubmit()">Submit</button>
+    </div>
+  </p-card>
+</div>
