@@ -125,9 +125,7 @@ func main() {
 	app := fiber.New()
 	app.Static("/", "./dist")
 	app.Use(cors.New())
-	app.Get("/*", func(ctx *fiber.Ctx) error {
-		return ctx.SendFile("dist/index.html")
-	})
+
 	app.Get("api/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
@@ -237,6 +235,8 @@ func main() {
 			}
 		}
 	}))
-
+	app.Get("/*", func(ctx *fiber.Ctx) error {
+		return ctx.SendFile("dist/index.html")
+	})
 	app.Listen(getPort())
 }
