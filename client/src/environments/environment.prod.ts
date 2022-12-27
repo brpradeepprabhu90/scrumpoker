@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: "http://127.0.0.1:3000/api/",
-  socketPath: "ws://localhost:3000/ws/pradeep_111_11"
+  apiUrl: "https://scrumpoker-production.up.railway.app/api/",
+  socketPath: "ws://scrumpoker-production.up.railway.app/ws/pradeep_111_11"
 };
